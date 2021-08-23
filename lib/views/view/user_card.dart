@@ -1,4 +1,5 @@
 import 'package:dough/dough.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/firestore_users_model.dart';
@@ -57,28 +58,32 @@ class _UserCardState extends State<UserCard> {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      const SizedBox(height: 10),
+                      sunsetNotice(),
                       buildBasicInfo(),
                       const SizedBox(height: 25.0),
                       buildSocialCardsList(),
-                      footerButtons()
+                      footerButtons(),
                     ],
                   );
                 } else {
                   return Column(
                     children: [
+                      const SizedBox(height: 10),
+                      sunsetNotice(),
                       Row(
                         children: [
                           Expanded(flex: 2, child: buildBasicInfo()),
                           Expanded(
                             flex: 3,
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 70.0),
+                              padding: const EdgeInsets.only(top: 50.0),
                               child: buildSocialCardsList(),
                             ),
                           )
                         ],
                       ),
-                      footerButtons()
+                      footerButtons(),
                     ],
                   );
                 }
@@ -86,6 +91,27 @@ class _UserCardState extends State<UserCard> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget sunsetNotice() {
+    TextStyle defaultStyle =
+        const TextStyle(color: Colors.grey, fontSize: 20.0);
+    TextStyle linkStyle = const TextStyle(color: Colors.blue);
+    return RichText(
+      text: TextSpan(
+        style: defaultStyle,
+        children: <TextSpan>[
+          const TextSpan(text: 'Flutree will be sunsetted soon. Read more '),
+          TextSpan(
+              text: 'here',
+              style: linkStyle,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  launchURL(context, 'https://flutree--238-9ihki8c4.web.app/');
+                }),
+        ],
       ),
     );
   }
@@ -108,7 +134,7 @@ class _UserCardState extends State<UserCard> {
   Column buildBasicInfo() {
     return Column(
       children: [
-        const SizedBox(height: 30.0),
+        const SizedBox(height: 25.0),
         PressableDough(
           child: CircleAvatar(
             radius: 50.0,
