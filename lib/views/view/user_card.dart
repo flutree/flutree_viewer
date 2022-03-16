@@ -1,13 +1,13 @@
 import 'package:dough/dough.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../models/firestore_users_model.dart';
-import '../support.dart';
+
 import '../../CONSTANTS.dart';
+import '../../models/firestore_users_model.dart';
+import '../../utils/linkcard_model.dart';
 import '../../utils/url_launcher.dart';
 import '../report_abuse.dart';
-import '../../utils/linkcard_model.dart';
+import '../support.dart';
 import '../widgets/link_card.dart';
 
 class UserCard extends StatefulWidget {
@@ -20,7 +20,7 @@ class UserCard extends StatefulWidget {
 
 class _UserCardState extends State<UserCard> {
   List<LinkCard> datas = [];
-  String? _profileLink;
+  late String _profileLink;
   @override
   void initState() {
     super.initState();
@@ -59,31 +59,47 @@ class _UserCardState extends State<UserCard> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 10),
-                      sunsetNotice(),
-                      buildBasicInfo(),
+                      HeaderWidget(
+                          nickname:
+                              widget.snapshot.fields!.nickname!.stringValue!,
+                          imageUrl: widget.snapshot.fields!.dpUrl!.stringValue!,
+                          showSubtitle: widget
+                              .snapshot.fields?.showSubtitle?.booleanValue,
+                          subtitle:
+                              widget.snapshot.fields?.subtitle?.stringValue),
                       const SizedBox(height: 25.0),
-                      buildSocialCardsList(),
-                      footerButtons(),
+                      SocialCardsList(datas),
+                      FooterButtons(profileLink: _profileLink)
                     ],
                   );
                 } else {
                   return Column(
                     children: [
                       const SizedBox(height: 10),
-                      sunsetNotice(),
                       Row(
                         children: [
-                          Expanded(flex: 2, child: buildBasicInfo()),
+                          Expanded(
+                            flex: 2,
+                            child: HeaderWidget(
+                                nickname: widget
+                                    .snapshot.fields!.nickname!.stringValue!,
+                                imageUrl:
+                                    widget.snapshot.fields!.dpUrl!.stringValue!,
+                                showSubtitle: widget.snapshot.fields
+                                    ?.showSubtitle?.booleanValue,
+                                subtitle: widget
+                                    .snapshot.fields?.subtitle?.stringValue),
+                          ),
                           Expanded(
                             flex: 3,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 50.0),
-                              child: buildSocialCardsList(),
+                              child: SocialCardsList(datas),
                             ),
                           )
                         ],
                       ),
-                      footerButtons(),
+                      FooterButtons(profileLink: _profileLink)
                     ],
                   );
                 }
@@ -94,29 +110,60 @@ class _UserCardState extends State<UserCard> {
       ),
     );
   }
+}
 
-  Widget sunsetNotice() {
-    TextStyle defaultStyle =
-        const TextStyle(color: Colors.grey, fontSize: 20.0);
-    TextStyle linkStyle = const TextStyle(color: Colors.blue);
-    return RichText(
-      text: TextSpan(
-        style: defaultStyle,
-        children: <TextSpan>[
-          const TextSpan(text: 'Flutree will be sunsetted soon. Read more '),
-          TextSpan(
-              text: 'here',
-              style: linkStyle,
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  launchURL(context, 'https://flutree--238-9ihki8c4.web.app/');
-                }),
-        ],
-      ),
+class HeaderWidget extends StatelessWidget {
+  const HeaderWidget(
+      {Key? key,
+      required this.nickname,
+      required this.imageUrl,
+      required this.showSubtitle,
+      required this.subtitle})
+      : super(key: key);
+
+  final String imageUrl;
+  final String nickname;
+  final bool? showSubtitle;
+  final String? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 25.0),
+        PressableDough(
+          child: CircleAvatar(
+            radius: 50.0,
+            backgroundColor: Colors.transparent,
+            backgroundImage: NetworkImage(imageUrl),
+          ),
+        ),
+        const SizedBox(height: 28.0),
+        SelectableText('@$nickname',
+            style: const TextStyle(
+              fontSize: 22,
+            )),
+        const SizedBox(height: 5),
+        Visibility(
+          visible: showSubtitle ?? false,
+          child: GestureDetector(
+              child: SelectableText(
+            subtitle ?? 'Flutree user',
+            textAlign: TextAlign.center,
+          )),
+        ),
+      ],
     );
   }
+}
 
-  ListView buildSocialCardsList() {
+class SocialCardsList extends StatelessWidget {
+  const SocialCardsList(this.datas, {Key? key}) : super(key: key);
+
+  final List<LinkCard> datas;
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -130,38 +177,15 @@ class _UserCardState extends State<UserCard> {
             ],
     );
   }
+}
 
-  Column buildBasicInfo() {
-    return Column(
-      children: [
-        const SizedBox(height: 25.0),
-        PressableDough(
-          child: CircleAvatar(
-            radius: 50.0,
-            backgroundColor: Colors.transparent,
-            backgroundImage:
-                NetworkImage(widget.snapshot.fields!.dpUrl!.stringValue!),
-          ),
-        ),
-        const SizedBox(height: 28.0),
-        SelectableText('@${widget.snapshot.fields?.nickname?.stringValue}',
-            style: const TextStyle(
-              fontSize: 22,
-            )),
-        const SizedBox(height: 5),
-        Visibility(
-          visible: widget.snapshot.fields?.showSubtitle?.booleanValue ?? false,
-          child: GestureDetector(
-              child: SelectableText(
-            widget.snapshot.fields?.subtitle?.stringValue ?? 'Flutree user',
-            textAlign: TextAlign.center,
-          )),
-        ),
-      ],
-    );
-  }
+class FooterButtons extends StatelessWidget {
+  const FooterButtons({Key? key, required this.profileLink}) : super(key: key);
 
-  Widget footerButtons() {
+  final String profileLink;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 60),
       child: Column(
@@ -173,7 +197,7 @@ class _UserCardState extends State<UserCard> {
               TextButton.icon(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        AbuseReport(profileLink: _profileLink))),
+                        AbuseReport(profileLink: profileLink))),
                 icon: const FaIcon(
                   FontAwesomeIcons.exclamationTriangle,
                   size: 14,

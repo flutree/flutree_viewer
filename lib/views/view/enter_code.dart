@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
-import '../widgets/reuseable.dart';
+
 import '../../CONSTANTS.dart';
 import '../../models/firestore_users_model.dart';
+import '../widgets/reuseable.dart';
 import 'not_found.dart';
 import 'user_card.dart';
 
