@@ -28,6 +28,10 @@ class Donate extends StatelessWidget {
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.blueGrey),
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.arrowLeft),
+          onPressed: () => Navigator.pop(context),
+        ),
         actionsIconTheme: const IconThemeData(color: Colors.blueGrey),
         elevation: 0.0,
         centerTitle: true,
@@ -72,7 +76,7 @@ class Donate extends StatelessWidget {
                 DonateCard(
                   label: 'Share the app',
                   link: _links['getapp'],
-                  faIcon: FontAwesomeIcons.shareAlt,
+                  faIcon: FontAwesomeIcons.shareNodes,
                   onTapFun: () => Share.share(
                       'Get Flutree now! Available on Android and web. ${_links['getapp']}',
                       subject: 'Sharing Flutree app'),
