@@ -199,7 +199,7 @@ class FooterButtons extends StatelessWidget {
                     builder: (context) =>
                         AbuseReport(profileLink: profileLink))),
                 icon: const FaIcon(
-                  FontAwesomeIcons.exclamationTriangle,
+                  FontAwesomeIcons.triangleExclamation,
                   size: 14,
                   semanticLabel: 'Report abuse',
                 ),
