@@ -166,7 +166,7 @@ class _InputCodeAreaState extends State<InputCodeArea> {
   @override
   Widget build(BuildContext context) {
     // if (userCode.isNotEmpty) _codeController.text = userCode;
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!hasTryAccessProfile && userCode.isNotEmpty) {
         accessProfile(userCode.trim());
       }
